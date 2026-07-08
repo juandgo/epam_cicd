@@ -22,21 +22,10 @@ jobs:
     - name: Deploy to minikube
       run:
         kubectl apply -f k8s-node-app.yaml
-    # 🔍 Add this step to catch the error logs!
-    - name: Debug Kubernetes Resources
-      if: always()
+    # ⏳ Add this right here to halt execution until the container finishes creating!
+    - name: Wait for Pod to be Ready
       run: |
-        echo "=== ALL PODS ==="
-        kubectl get pods -A
-        echo "=== DEPLOYMENT DESCRIBE ==="
-        kubectl describe deployment nodejs-app
-        echo "=== POD LOGS ==="
-        kubectl logs -l app=nodejs-app --all-containers=true --tail=50 || echo "No logs available"
-
-    - name: Test service URLs
-      run: |
-          minikube service list
-          minikube service nodejs-app --url
+        kubectl rollout status deployment/nodejs-app --timeout=90s
     - name: Test service URLs
       run: |
           minikube service list
