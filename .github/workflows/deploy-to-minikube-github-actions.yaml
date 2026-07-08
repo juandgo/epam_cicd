@@ -26,3 +26,9 @@ jobs:
       run: |
           minikube service list
           minikube service nodejs-app --url
+    # Add this step to block and wait for readiness ⏳
+    - name: Wait for Deployment to be Ready
+      run: kubectl rollout status deployment/nodejs-app --timeout=60s
+
+    - name: Test service URLs
+      run: minikube service list
